@@ -43,3 +43,18 @@ graph TD
     C -->|clean OBJ| D(parse_obj_txt)
     D -->|verts & faces| E[IfcOpenShell API]
     E -->|IfcFacetedBrep| F[GeneratedBlock.ifc]
+```
+---
+
+## Repository Layout
+.
+├─ examples/
+│  ├─ obj_mess.txt        # raw LLM response
+│  └─ parsed_mesh.txt     # extracted verts & faces
+├─ src/
+│  ├─ 01_prompt_llm.py    # prompt model & save response
+│  ├─ 02_extract_code.py  # extract code block
+│  ├─ 03_parse_mesh.py    # OBJ → Python lists
+│  └─ 04_mesh_to_ifc.py   # lists → IFC file
+├─ requirements.txt
+└─ README.md              # you’re reading it
