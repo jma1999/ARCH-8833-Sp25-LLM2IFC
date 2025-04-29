@@ -9,14 +9,15 @@ Generate 3-D BIM (IFC) blocks from plain-language instructions with an LLM, a ti
 
 ## Table of Contents
 1. [Why this exists](#why-this-exists)
-2. [How it works (TL;DR)](#how-it-works-tldr)
-3. [Repository layout](#repository-layout)
-4. [Quick start](#quick-start)
-5. [Detailed workflow](#detailed-workflow)
-6. [Implementation decisions](#implementation-decisions)
-7. [Limitations & future work](#limitations--future-work)
-8. [References](#references)
-9. [License](#license)
+2. [Process Overview](#process-overview)
+3. [How it works (TL;DR)](#how-it-works-tldr)
+4. [Repository Layout](#repository-layout)
+5. [Quick Start](#quick-start)
+6. [Detailed Workflow](#detailed-workflow)
+7. [Implementation Decisions](#implementation-decisions)
+8. [Limitations & Future Work](#limitations--future-work)
+9. [References](#references)
+10. [License](#license)
 
 ---
 
@@ -24,13 +25,12 @@ Generate 3-D BIM (IFC) blocks from plain-language instructions with an LLM, a ti
 > *“Can we ask ChatGPT for a *building* instead of a poem and open the result in Revit?”*
 
 Our intent is to make the workflow:
-1. **Understandable** – only ~100 lines Python.  
 2. **Re-usable** – you can swap GPT-4o-mini for another chat model.  
 3. **Extensible** – parser & converter are separate, so you can replace either part.
 
 ---
 
-## 🚦 Process overview
+## 🚦 Process Overview
 
 1. 🗣️ **LLM** → produce an **OBJ** mesh in a fenced code-block.  
 2. 🧹 Extract OBJ lines from the chat response.  
@@ -52,7 +52,7 @@ graph TD
 ```
 ---
 
-## Repository layout
+## Repository Layout
 ```text
 .
 ├─ src/
