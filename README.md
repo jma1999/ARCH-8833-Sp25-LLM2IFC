@@ -8,15 +8,15 @@ Generate 3-D BIM (IFC) blocks from plain-language instructions with an LLM, a ti
 ---
 
 ## Table of Contents
-1. [Why this exists](#why-this-exists)
-2. [Process Overview](#process-overview)
+1. [Why this exists](#✨-why-this-exists)
+2. [Process Overview](#🚦-process-overview)
 3. [How it works (TL;DR)](#how-it-works-tldr)
 4. [Repository Layout](#repository-layout)
-5. [Quick Start](#quick-start)
-6. [Detailed Workflow](#detailed-workflow)
-7. [Implementation Decisions](#implementation-decisions)
-8. [Limitations & Future Work](#limitations--future-work)
-9. [References](#references)
+5. [Quick Start](#⚡-quick-start)
+6. [Detailed Workflow](#🔍-detailed-workflow)
+7. [Implementation Decisions](#⚙️-implementation-decisions)
+8. [Limitations & Future Work](#⚠️-limitations--future-work)
+9. [References](#📚-references)
 
 ---
 
