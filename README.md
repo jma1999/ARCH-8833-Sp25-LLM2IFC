@@ -17,16 +17,15 @@ Generate 3-D BIM (IFC) blocks from plain-language instructions with an LLM, a ti
 7. [Implementation Decisions](#implementation-decisions)
 8. [Limitations & Future Work](#limitations--future-work)
 9. [References](#references)
-10. [License](#license)
 
 ---
 
 ## ✨ Why this exists
-> *“Can we ask ChatGPT for a *building* instead of a poem and open the result in Revit?”*
+> *“Can we ask ChatGPT for a *building* or general 3d models, the same way we ask it to generate code, and open the result in Revit?”*
 
 Our intent is to make the workflow:
 2. **Re-usable** – you can swap GPT-4o-mini for another chat model.  
-3. **Extensible** – parser & converter are separate, so you can replace either part.
+3. **Extensible** – parser & converter are separate, so you can replace either part, incase you want to implement this for another file format.
 
 ---
 
@@ -36,7 +35,7 @@ Our intent is to make the workflow:
 2. 🧹 Extract OBJ lines from the chat response.  
 3. 🔎 Parse vertices & faces.  
 4. 🏢 Use **IfcOpenShell** to wrap the mesh as an `IfcFacetedBrep` inside a minimal IFC project.  
-5. 👀 Open `GeneratedBlock.ifc` in any BIM viewer.
+5. 👀 Open `GeneratedBlock.ifc` in Revit.
 
 ---
 
@@ -44,7 +43,7 @@ Our intent is to make the workflow:
 
 ```mermaid
 graph TD
-    A("User prompt: _'Generate a small rectangular building block.'_") -->|chat API| B[LLM]
+    A("User prompt: _'Generate a small rectangular building block.'_") -->|openAI API| B[LLM]
     B -->|OBJ-like text| C{{extract_code_block}}
     C -->|clean OBJ| D(parse_obj_txt)
     D -->|verts & faces| E[IfcOpenShell API]
@@ -60,6 +59,7 @@ graph TD
 │  ├─ 02_parse_mesh.py
 │  └─ 03_mesh_to_ifc.py
 ├─ examples/
+│  ├─ bim_object.ifc
 │  ├─ obj_mess.txt
 │  └─ parsed_mesh.txt
 ├─ requirements.txt
@@ -70,27 +70,20 @@ graph TD
 
 ## ⚡ Quick Start
 
-### 1&nbsp;· Clone & set up a virtual-env
+### 1&nbsp;· Clone & set-up
 ```bash
-git clone https://github.com/<your-user>/text-to-ifc-playground.git
-cd text-to-ifc-playground
-python -m venv .venv && source .venv/bin/activate    # Windows: .venv\Scripts\activate
+git clone https://github.com/jma1999/ARCH-8833-Sp25-LLM2IFC.git
 pip install -r requirements.txt
 ```
-### 2&nbsp;· Add your OpenAI key
+### 2&nbsp;· Add your OpenAI API key
 ```bash
-# macOS / Linux
-export OPENAI_API_KEY="sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-
-# Windows PowerShell
 setx OPENAI_API_KEY "sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
 ```
-### 3&nbsp;· Add your OpenAI key
+### 3&nbsp;· Run the pipeline end-to-end
 ```bash
 python src/01_prompt_llm.py "Generate a simple small rectangular building block."
-python src/02_extract_code.py
-python src/03_parse_mesh.py
-python src/04_mesh_to_ifc.py
+python src/02_parse_mesh.py
+python src/03_mesh_to_ifc.py
 
 open GeneratedBlock.ifc          # or open in Revit
 ```
@@ -102,12 +95,11 @@ open GeneratedBlock.ifc          # or open in Revit
 
 | Step | Script / File | Purpose (what it does) | Key Points |
 |------|---------------|------------------------|------------|
-| **1** | `src/01_prompt_llm.py` | Send prompt to LLM, save full response → `examples/obj_mess.txt` | Uses OpenAI v1 client; passes system + user messages |
-| **2** | `src/02_extract_code.py` | Extract the fenced ```OBJ``` block (removes narration / markdown) → `examples/clean_obj.txt` | Simple regex; fails loud on missing block |
-| **3** | `src/03_parse_mesh.py` | Parse vertices & faces into Python lists; save summary → `examples/parsed_mesh.txt` | Accepts quads or tris, 1-based indices |
-| **4** | `src/04_mesh_to_ifc.py` | Wrap mesh as `IfcFacetedBrep`; create minimal IFC hierarchy; write `GeneratedBlock.ifc` | Relies on `ifcopenshell.api` high-level helpers |
+| **1** | `src/01_prompt_llm.py` | Send prompt to LLM, save full response → `obj_mess.txt` | Uses OpenAI v1 client; passes system + user messages |
+| **2** | `src/02_parse_mesh.py` | Parse vertices & faces into Python lists; save summary → `parsed_mesh.txt` | Accepts quads or tris, 1-based indices |
+| **3** | `src/03_mesh_to_ifc.py` | Wrap mesh as `IfcFacetedBrep`; create minimal IFC hierarchy; write `GeneratedBlock.ifc` | Relies on `ifcopenshell.api` high-level helpers |
 
-> **Debug tip:** Every step emits a file under `examples/` so you can inspect intermediate output and catch formatting issues early.
+> **Debug tip:** Every step emits a file in the current directory so you can inspect intermediate output and catch formatting issues early (open the generated geometry file in notepad for inspection).
 
 ---
 
@@ -115,8 +107,8 @@ open GeneratedBlock.ifc          # or open in Revit
 
 | Decision | Why we chose it | Alternatives / Trade-offs |
 |----------|-----------------|---------------------------|
-| Ask LLM to output **OBJ** text | Easiest grammar, plenty of examples in web data, dead-simple to parse. | Ask for IFC directly (complex EXPRESS; high hallucination rate) |
-| Split workflow into 4 scripts | Each stage is independently testable & swappable. | Single monolithic script (faster, but harder to debug) |
+| Ask LLM to output **OBJ** text | Easiest grammar, plenty of examples in web data, current LLMs seem to be better trained to understand .obj file formats for meshes, simple to parse. | Ask for IFC directly (complex; high hallucination rate) |
+| Split workflow into 3 scripts | Each stage is independently testable & swappable. | Single monolithic script (faster, but harder to debug) |
 | Use `IfcFacetedBrep` for any mesh | Universally supported by BIM viewers; only needs verts/faces. | Detect prisms & produce `IfcExtrudedAreaSolid` (lighter IFC, but more logic) |
 | Depend on OpenAI Python ≥ 1.0 | Future-proof; uses `client.chat.completions.create`. | Pin to `openai==0.28` & legacy API (simpler for old code) |
 
@@ -137,6 +129,7 @@ open GeneratedBlock.ifc          # or open in Revit
 - [ ] Auto-detect extrusions for parametric solids (`IfcExtrudedAreaSolid`).  
 - [ ] Config file to swap in local Hugging Face chat models (`llama.cpp`, etc.).  
 - [ ] Add IFC metadata (owner history, units, placement, GUID).
+- [ ] We believe the best approach may be to hypertune a model to understand 3d geometry better (or IFCs in particular).
 
 ---
 
