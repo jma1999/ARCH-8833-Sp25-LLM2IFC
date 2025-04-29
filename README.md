@@ -57,9 +57,8 @@ graph TD
 .
 ├─ src/
 │  ├─ 01_prompt_llm.py
-│  ├─ 02_extract_code.py
-│  ├─ 03_parse_mesh.py
-│  └─ 04_mesh_to_ifc.py
+│  ├─ 02_parse_mesh.py
+│  └─ 03_mesh_to_ifc.py
 ├─ examples/
 │  ├─ obj_mess.txt
 │  └─ parsed_mesh.txt
