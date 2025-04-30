@@ -24,8 +24,8 @@ Generate 3-D BIM (IFC) blocks from plain-language instructions with an LLM, a ti
 > *“Can we ask ChatGPT for a *building* or general 3d models, the same way we ask it to generate code, and open the result in Revit?”*
 
 Our intent is to make the workflow:
-2. **Re-usable** – you can swap GPT-4o-mini for another chat model.  
-3. **Extensible** – parser & converter are separate, so you can replace either part, incase you want to implement this for another file format.
+1. **Re-usable** – you can swap GPT-4o-mini for another chat model.  
+2. **Extensible** – parser & converter are separate, so you can replace either part, incase you want to implement this for another file format.
 
 ---
 
